@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>oaa+</title>
+  <title>kmp+</title>
   <style>
     :root {
       --accent-blue: #3498db;
@@ -45,6 +45,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* Тёмная тема */
     .dark-mode {
       background-color: var(--dark-bg);
       color: var(--dark-text);
@@ -200,84 +201,55 @@
     .kmp14 { background: rgba(205, 110, 200, 0.1); border-left: 4px solid var(--accent14); }
 
     /* Адаптивные таблицы */
-    .responsive-table table {
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .table-container table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
+      min-width: 480px; /* гарантирует читаемость */
       border: 1px solid var(--light-gray);
     }
 
-    .responsive-table th {
+    .table-container th {
       background-color: var(--accent-blue);
       color: white;
       padding: 12px 15px;
       text-align: left;
     }
 
-    .responsive-table td {
+    .table-container td {
       padding: 12px 15px;
       border-top: 1px solid var(--light-gray);
     }
 
-    .responsive-table tr:nth-child(even) {
+    .table-container tr:nth-child(even) {
       background-color: #f9f9f9;
     }
 
-    /* Мобильная адаптация таблиц */
-    @media (max-width: 768px) {
-      .responsive-table table,
-      .responsive-table thead,
-      .responsive-table tbody,
-      .responsive-table th,
-      .responsive-table td,
-      .responsive-table tr {
-        display: block;
-      }
-
-      .responsive-table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-      }
-
-      .responsive-table tr {
-        border: 1px solid var(--light-gray);
-        margin-bottom: 15px;
-        padding: 15px;
-        background-color: #fff;
-        border-radius: 6px;
-      }
-
-      .responsive-table td {
-        border: none;
-        position: relative;
-        padding-left: 50% !important;
-        text-align: right;
-      }
-
-      .responsive-table td::before {
-        content: attr(data-label) ": ";
-        position: absolute;
-        left: 15px;
-        width: 45%;
-        font-weight: bold;
-        text-align: left;
-      }
-
-      .responsive-table a {
-        display: inline-block;
-        margin-top: 5px;
-      }
+    .table-container tr:hover {
+      background-color: rgba(52, 152, 219, 0.2);
     }
 
-    /* Темная тема для таблиц */
-    .dark-mode .responsive-table tr {
+    .table-container td:first-child {
+      font-weight: normal;
+      font-size: 1.1rem;
+      color: #0a2e6e;
+      font-family: Verdana, serif;
+    }
+
+    /* Тёмная тема для таблиц */
+    .dark-mode .table-container tr:nth-child(even) {
       background-color: var(--dark-card);
-      border-color: var(--dark-border);
     }
 
-    .dark-mode .responsive-table td::before {
-      color: var(--dark-text);
+    .dark-mode .table-container tr:nth-child(odd) {
+      background-color: var(--dark-card);
     }
 
     footer {
@@ -291,6 +263,14 @@
       h1 { font-size: 1.8rem; }
       .content-section { padding: 1.5rem; }
       .nav-button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+      .table-container th,
+      .table-container td {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      .table-container td:first-child {
+        font-size: 1rem;
+      }
     }
 
     .tag {
@@ -356,146 +336,64 @@
 
             <h2>Понятие и основания компьютерной лингвистики</h2>
             
-            <div class="responsive-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>AM/BM</th>
-                            <th>Название</th>
-                            <th>Ссылка</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Предмет компьютерной лингвистики в минувшем</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/scl1.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Предмет компьютерной лингвистики в настоящем</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/scl2.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Предмет компьютерной лингвистики в грядущем</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/scl3.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">К предмету современной компьютерной лингвистики</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/War.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Где обитает современная компьютерная лингвистика</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/LifeCL.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Логико-математические основы компьютерной лингвистики</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/cllmf.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Языковедческие основы компьютерной лингвистики</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/clml.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">AM</td>
-                            <td data-label="Название">Rule Based и прескриптивизм</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/rb1.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">AM</td>
-                            <td data-label="Название">Rule Based в компьютерной лингвистике</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/rb2.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">AM</td>
-                            <td data-label="Название">Rule Based в языковом образовании</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/rb3.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Технические основы компьютерной лингвистики</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/clnlp.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Байесианский подход в компьютерной лингвистике</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/bayes.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">BM</td>
-                            <td data-label="Название">Уроки DL LLM в понимании становления языковой компетенции</td>
-                            <td data-label="Ссылка"><a target="_blank" href="edu/dl-homo.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr><th>AM/BM</th><th>Название</th><th>Ссылка</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>BM</td><td>Предмет компьютерной лингвистики в минувшем</td><td><a target="_blank" href="cl/scl1.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Предмет компьютерной лингвистики в настоящем</td><td><a target="_blank" href="cl/scl2.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Предмет компьютерной лингвистики в грядущем</td><td><a target="_blank" href="cl/scl3.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>К предмету современной компьютерной лингвистики</td><td><a target="_blank" href="cl/War.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Где обитает современная компьютерная лингвистика</td><td><a target="_blank" href="cl/LifeCL.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Логико-математические основы компьютерной лингвистики</td><td><a target="_blank" href="edu/cllmf.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Языковедческие основы компьютерной лингвистики</td><td><a target="_blank" href="edu/clml.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>AM</td><td>Rule Based и прескриптивизм</td><td><a target="_blank" href="edu/rb1.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>AM</td><td>Rule Based в компьютерной лингвистике</td><td><a target="_blank" href="edu/rb2.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>AM</td><td>Rule Based в языковом образовании</td><td><a target="_blank" href="edu/rb3.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Технические основы компьютерной лингвистики</td><td><a target="_blank" href="edu/clnlp.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Байесианский подход в компьютерной лингвистике</td><td><a target="_blank" href="edu/bayes.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>BM</td><td>Уроки DL LLM в понимании становления языковой компетенции</td><td><a target="_blank" href="edu/dl-homo.html" class="link-kmp15">Перейти</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <h2>Афоризмы и максимы</h2>
             
-            <div class="responsive-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>A/M</th>
-                            <th>Название</th>
-                            <th>Ссылка</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="Тип">А</td>
-                            <td data-label="Название">Витгенштейн: Границы моего языка...</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/Wittgenstein.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">А</td>
-                            <td data-label="Название">Хайдеггер: Язык - дом бытия</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/Heidegger.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">А</td>
-                            <td data-label="Название">Соссюр: Язык — это система, в которой</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/Saussure.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">А</td>
-                            <td data-label="Название">Лакан: Бессознательное структурировано как язык</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/Lacan.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                        <tr>
-                            <td data-label="Тип">М</td>
-                            <td data-label="Название">Джелинек: Каждый раз, когда лингвист ...</td>
-                            <td data-label="Ссылка"><a target="_blank" href="cl/Jelinek.html" class="link-kmp15">Перейти</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr><th>A/M</th><th>Название</th><th>Ссылка</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>А</td><td>Витгенштейн: Границы моего языка...</td><td><a target="_blank" href="cl/Wittgenstein.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>А</td><td>Хайдеггер: Язык - дом бытия</td><td><a target="_blank" href="cl/Heidegger.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>А</td><td>Соссюр: Язык — это система, в которой</td><td><a target="_blank" href="cl/Saussure.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>А</td><td>Лакан: Бессознательное структурировано как язык</td><td><a target="_blank" href="cl/Lacan.html" class="link-kmp15">Перейти</a></td></tr>
+                            <tr><td>М</td><td>Джелинек: Каждый раз, когда лингвист ...</td><td><a target="_blank" href="cl/Jelinek.html" class="link-kmp15">Перейти</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
-        <!-- Остальные секции (section2–section6) остаются без изменений -->
+        <!-- Остальные секции без изменений -->
         <section id="section2" class="content-section">
             <!-- ... ваш существующий контент ... -->
-            <h2>Особенности учебных материалов по курсу "Основы компьютерной лингвистики"</h2>
-            <!-- ... остальное содержимое section2 ... -->
         </section>
-
         <section id="section3" class="content-section">
             <!-- ... ваш существующий контент ... -->
         </section>
-
         <section id="section4" class="content-section">
             <!-- ... ваш существующий контент ... -->
         </section>
-
         <section id="section5" class="content-section">
             <!-- ... ваш существующий контент ... -->
         </section>
-
         <section id="section6" class="content-section">
             <!-- ... ваш существующий контент ... -->
         </section>
