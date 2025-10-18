@@ -355,16 +355,29 @@
         @media (max-width: 768px) {
             .students-panel {
                 position: fixed;
-                transform: translateX(-100%);
+				top: 0;
+				left: 0;
+				transform: translateX(-100%);
                 z-index: 30;
+				display: flex;
+				flex-direction: column;
                 width: 85%;
                 max-width: 300px;
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
                 height: 100%;
+				background-color: white; /* на случай если фон прозрачный */
             }
+			.panel-header {
+				flex-shrink: 0; /* чтобы header не сжимался */
+			}
             .students-panel.open {
                 transform: translateX(0);
             }
+			.students-list {
+				flex-grow: 1;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+			}
             .mobile-menu-btn {
                 display: flex;
                 align-items: center;
