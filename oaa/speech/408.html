@@ -355,29 +355,28 @@
         @media (max-width: 768px) {
             .students-panel {
                 position: fixed;
-				top: 0;
-				left: 0;
-				transform: translateX(-100%);
+                top: 0;
+                left: 0;
+                transform: translateX(-100%);
                 z-index: 30;
-				display: flex;
-				flex-direction: column;
                 width: 85%;
                 max-width: 300px;
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-                height: 100%;
-				background-color: white; /* на случай если фон прозрачный */
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
             }
-			.panel-header {
-				flex-shrink: 0; /* чтобы header не сжимался */
-			}
             .students-panel.open {
                 transform: translateX(0);
             }
-			.students-list {
-				flex-grow: 1;
-				overflow-y: auto;
-				-webkit-overflow-scrolling: touch;
-			}
+            .panel-header {
+                flex-shrink: 0;
+            }
+            .students-list {
+                flex-grow: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
             .mobile-menu-btn {
                 display: flex;
                 align-items: center;
@@ -403,7 +402,7 @@
                 gap: 5px;
             }
         }
-		.link-kmp1 {
+        .link-kmp1 {
             color: #fffee0; 
             background-color: #3498db;
             padding: 0.1em 0.5em; 
@@ -411,13 +410,13 @@
             border-radius: 3px; 
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
         }
-		footer {
-      text-align: center;
-      padding: 20px 0;
-      margin-top: 1px;
-      font-size: 0.9rem;
-      border-top: 0px solid #ddd;
-    }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 1px;
+            font-size: 0.9rem;
+            border-top: 0px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -435,13 +434,13 @@
                     <i class="fas fa-user-tie"></i>
                     <span>ogievich@brsu.by</span>
                 </div>
-				<div class="info-item">
+                <div class="info-item">
                     <i class="fas fa-info-circle"></i>
                     <a target="_blank" href="https://t.me/kmp500" class="link-kmp1">kmp+</a>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-info-circle"></i>
-                    <a target="_blank" href="https://oaa-cmd.github.io./clat/speech.html" class="link-kmp1">Учебное пособие</a>
+                    <a target="_blank" href="https://oaa-cmd.github.io/clat/speech.html" class="link-kmp1">Учебное пособие</a>
                 </div>
             </div>
         </div>
@@ -526,12 +525,13 @@
             <button class="close-btn" id="close-comment">Закрыть</button>
         </div>
     </div>
-     <footer class="footer">
-<div class="container">
-<p>© 2025 | oaa | CC BY-NC-SA 4.0</p>
-</div>
-</footer>
-<div style="position: fixed; bottom: 10px; right: 33px; opacity: 0.3; font-size: 14px;">kmp+</div>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 | oaa | CC BY-NC-SA 4.0</p>
+        </div>
+    </footer>
+    <div style="position: fixed; bottom: 10px; right: 33px; opacity: 0.3; font-size: 14px;">kmp+</div>
+
     <script>
         // Все данные приложения в формате JSON
         const appData = {
@@ -540,353 +540,110 @@
                     "id": 1,
                     "name": "Веремкович Злата",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 2,
                     "name": "Денисюк Дарья",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 3,
                     "name": "Кивачук Кристина",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 4,
                     "name": "Крагель Екатерина",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 5,
                     "name": "Новик Луиза",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 6,
                     "name": "Остапук Анастасия",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 7,
                     "name": "Павлюкевич Елизавета",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 8,
                     "name": "Рубель Анна",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 9,
                     "name": "Ходаковская Екатерина",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "not-completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 },
                 {
                     "id": 10,
                     "name": "Яцкевич Матвей",
                     "labs": [
-                        {
-                            "id": 1,
-                            "name": "CLS.  Введение в учебный курс",
-                            "dueDate": "2025-10-28",
-                            "status": "completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 2,
-                            "name": "MCL. Современная КЛ",
-                            "dueDate": "2025-11-04",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 3,
-                            "name": "LM. Логико-математические основы компьютерной лингвистики",
-                            "dueDate": "2025-11-11",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        },
-                        {
-                            "id": 4,
-                            "name": "SP4. ",
-                            "dueDate": "2025-??-??",
-                            "status": "not-completed",
-                            "comment": "пусто"
-                        }
+                        { "id": 1, "name": "CLS.  Введение в учебный курс", "dueDate": "2025-10-28", "status": "completed", "comment": "пусто" },
+                        { "id": 2, "name": "MCL. Современная КЛ", "dueDate": "2025-11-04", "status": "not-completed", "comment": "пусто" },
+                        { "id": 3, "name": "LM. Логико-математические основы компьютерной лингвистики", "dueDate": "2025-11-11", "status": "not-completed", "comment": "пусто" },
+                        { "id": 4, "name": "SP4. ", "dueDate": "2025-??-??", "status": "not-completed", "comment": "пусто" }
                     ]
                 }
             ]
         };
 
-        // Функция для вычисления прогресса студента
         const calculateProgress = (labs) => {
             if (!labs || labs.length === 0) return 0;
-            const completedLabs = labs.filter(lab => lab.status === "completed").length;
-            return completedLabs / labs.length;
+            return labs.filter(lab => lab.status === "completed").length / labs.length;
         };
 
-        // Подготовка данных студентов с прогрессом
         const students = appData.students.map(student => ({
             id: student.id,
             name: student.name,
@@ -897,12 +654,10 @@
             }))
         }));
 
-        // Состояние приложения
         let currentStudentId = null;
         let sortBy = "name";
         let sortOrder = "asc";
 
-        // DOM-элементы
         const studentsListEl = document.getElementById("students-list");
         const labsTableBodyEl = document.getElementById("labs-table-body");
         const currentStudentEl = document.getElementById("current-student");
@@ -918,7 +673,6 @@
         const statusInfo = document.getElementById("status-info");
         const statusText = document.getElementById("status-text");
 
-        // Функция для форматирования даты
         const formatDate = (date) => {
             return date.toLocaleDateString("ru-RU", {
                 day: "2-digit",
@@ -927,59 +681,45 @@
             });
         };
 
-        // Функция для рендеринга списка студентов
         const renderStudentsList = (filterText = "") => {
-            // Сортировка студентов
             const sortedStudents = [...students].sort((a, b) => {
                 if (sortBy === "name") {
-                    const nameComparison = a.name.localeCompare(b.name);
-                    return sortOrder === "asc" ? nameComparison : -nameComparison;
+                    const cmp = a.name.localeCompare(b.name);
+                    return sortOrder === "asc" ? cmp : -cmp;
                 } else {
-                    // Сортировка по прогрессу
-                    const progressDiff = a.progress - b.progress;
-                    if (progressDiff !== 0) {
-                        return sortOrder === "desc" ? progressDiff : -progressDiff;
-                    }
-                    // Вторичная сортировка по имени для стабильности
-                    const nameComparison = a.name.localeCompare(b.name);
-                    return sortOrder === "asc" ? nameComparison : -nameComparison;
+                    const diff = b.progress - a.progress; // по убыванию по умолчанию
+                    if (diff !== 0) return diff;
+                    return a.name.localeCompare(b.name); // стабилизация
                 }
             });
 
-            // Фильтрация студентов
-            const filteredStudents = sortedStudents.filter(student =>
-                student.name.toLowerCase().includes(filterText.toLowerCase())
+            const filtered = sortedStudents.filter(s =>
+                s.name.toLowerCase().includes(filterText.toLowerCase())
             );
 
-            // Очистка списка
             studentsListEl.innerHTML = "";
-
-            // Добавление студентов в список
-            filteredStudents.forEach(student => {
-                const studentItem = document.createElement("div");
-                studentItem.className = `student-item ${student.id === currentStudentId ? "active" : ""}`;
-                studentItem.dataset.id = student.id;
-                const progressPercentage = Math.round(student.progress * 100);
-                studentItem.innerHTML = `
+            filtered.forEach(student => {
+                const el = document.createElement("div");
+                el.className = `student-item ${student.id === currentStudentId ? "active" : ""}`;
+                el.dataset.id = student.id;
+                const p = Math.round(student.progress * 100);
+                el.innerHTML = `
                     <span>${student.name}</span>
                     <div class="progress-indicator">
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                            <div class="progress-fill" style="width: ${p}%"></div>
                         </div>
-                        <span>${progressPercentage}%</span>
+                        <span>${p}%</span>
                     </div>
                 `;
-                studentItem.addEventListener("click", () => {
+                el.addEventListener("click", () => {
                     selectStudent(student.id);
-                    if (window.innerWidth <= 768) {
-                        studentsPanel.classList.remove("open");
-                    }
+                    if (window.innerWidth <= 768) studentsPanel.classList.remove("open");
                 });
-                studentsListEl.appendChild(studentItem);
+                studentsListEl.appendChild(el);
             });
         };
 
-        // Функция для рендеринга таблицы лабораторных работ
         const renderLabsTable = () => {
             if (!currentStudentId) {
                 labsTableBodyEl.innerHTML = "";
@@ -993,149 +733,98 @@
                 const row = document.createElement("tr");
                 let icon = "";
                 switch (lab.status) {
-                    case "completed":
-                        icon = '<i class="fas fa-check"></i>';
-                        break;
-                    case "checking":
-                        icon = '<i class="fas fa-hourglass-half"></i>';
-                        break;
-                    case "overdue":
-                        icon = '<i class="fas fa-clock"></i>';
-                        break;
-                    default:
-                        icon = '<i class="fas fa-minus"></i>';
+                    case "completed": icon = '<i class="fas fa-check"></i>'; break;
+                    case "checking": icon = '<i class="fas fa-hourglass-half"></i>'; break;
+                    case "overdue": icon = '<i class="fas fa-clock"></i>'; break;
+                    default: icon = '<i class="fas fa-minus"></i>';
                 }
-                const statusCell = document.createElement("div");
-                statusCell.className = `status-cell status-${lab.status}`;
-                statusCell.dataset.labId = lab.id;
-                statusCell.dataset.studentId = currentStudentId;
-                statusCell.innerHTML = icon;
+                const cell = document.createElement("div");
+                cell.className = `status-cell status-${lab.status}`;
+                cell.dataset.labId = lab.id;
+                cell.dataset.studentId = currentStudentId;
+                cell.innerHTML = icon;
                 if (lab.comment) {
-                    const commentIndicator = document.createElement("div");
-                    commentIndicator.className = "comment-indicator";
-                    statusCell.appendChild(commentIndicator);
+                    const ind = document.createElement("div");
+                    ind.className = "comment-indicator";
+                    cell.appendChild(ind);
                 }
-                statusCell.addEventListener("click", () => {
-                    openCommentModal(lab);
-                });
-                row.innerHTML = `
-                    <td>${lab.name}</td>
-                    <td>${formatDate(lab.dueDate)}</td>
-                    <td></td>
-                `;
-                row.querySelector('td:last-child').appendChild(statusCell);
+                cell.addEventListener("click", () => openCommentModal(lab));
+                row.innerHTML = `<td>${lab.name}</td><td>${formatDate(lab.dueDate)}</td><td></td>`;
+                row.querySelector('td:last-child').appendChild(cell);
                 labsTableBodyEl.appendChild(row);
             });
         };
 
-        // Функция для выбора студента
-        const selectStudent = (studentId) => {
-            currentStudentId = studentId;
-            document.querySelectorAll(".student-item").forEach(item => {
-                item.classList.remove("active");
-            });
-            const selectedItem = document.querySelector(`.student-item[data-id="${studentId}"]`);
-            if (selectedItem) {
-                selectedItem.classList.add("active");
-            }
+        const selectStudent = (id) => {
+            currentStudentId = id;
+            document.querySelectorAll(".student-item").forEach(i => i.classList.remove("active"));
+            const el = document.querySelector(`.student-item[data-id="${id}"]`);
+            if (el) el.classList.add("active");
             renderLabsTable();
         };
 
-        // Функция для открытия модального окна просмотра
         const openCommentModal = (lab) => {
             modalTitle.textContent = lab.name;
             commentDisplay.textContent = lab.comment || "Комментариев нет";
             statusInfo.className = `status-info status-${lab.status}`;
-            let statusIcon = "";
-            let statusDescription = "";
+            let icon = "", text = "";
             switch (lab.status) {
-                case "completed":
-                    statusIcon = '<i class="fas fa-check"></i>';
-                    statusDescription = "Зачтено";
-                    break;
-                case "checking":
-                    statusIcon = '<i class="fas fa-hourglass-half"></i>';
-                    statusDescription = "Ладно, зачтено";
-                    break;
-                case "overdue":
-                    statusIcon = '<i class="fas fa-clock"></i>';
-                    statusDescription = "Не зачтено";
-                    break;
-                default:
-                    statusIcon = '<i class="fas fa-minus"></i>';
-                    statusDescription = "Не выполнено";
+                case "completed": icon = "fas fa-check"; text = "Зачтено"; break;
+                case "checking": icon = "fas fa-hourglass-half"; text = "Ладно, зачтено"; break;
+                case "overdue": icon = "fas fa-clock"; text = "Не зачтено"; break;
+                default: icon = "fas fa-minus"; text = "Не выполнено";
             }
-            statusInfo.innerHTML = `${statusIcon}<span>${statusDescription}</span>`;
+            statusInfo.innerHTML = `<i class="${icon}"></i><span>${text}</span>`;
             commentModal.style.display = "block";
         };
 
-        // Функция для закрытия модального окна
         const closeCommentModal = () => {
             commentModal.style.display = "none";
         };
 
-        // Инициализация приложения
         const initApp = () => {
             renderStudentsList();
 
-            studentSearchEl.addEventListener("input", (e) => {
-                renderStudentsList(e.target.value);
-            });
+            studentSearchEl.addEventListener("input", e => renderStudentsList(e.target.value));
 
-            // Обработчики для кнопок сортировки
-            sortButtons.forEach(button => {
-                button.addEventListener("click", () => {
-                    const newSortBy = button.dataset.sort;
-
-                    if (sortBy === newSortBy) {
+            sortButtons.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const newSort = btn.dataset.sort;
+                    if (sortBy === newSort) {
                         sortOrder = sortOrder === "asc" ? "desc" : "asc";
                     } else {
-                        sortBy = newSortBy;
-                        sortOrder = "asc";
-                        sortButtons.forEach(btn => btn.classList.remove("active"));
-                        button.classList.add("active");
+                        sortBy = newSort;
+                        sortOrder = "desc"; // по прогрессу — сразу по убыванию
+                        sortButtons.forEach(b => b.classList.remove("active"));
+                        btn.classList.add("active");
                     }
 
-                    // Обновляем иконки в обеих кнопках
-                    document.querySelector('.sort-btn[data-sort="name"] i').className =
-                        sortBy === "name"
-                            ? (sortOrder === "asc" ? "fas fa-sort-alpha-down" : "fas fa-sort-alpha-up")
-                            : "fas fa-sort-alpha-down";
-
-                    document.querySelector('.sort-btn[data-sort="progress"] i').className =
-                        sortBy === "progress"
-                            ? (sortOrder === "asc" ? "fas fa-sort-amount-down" : "fas fa-sort-amount-up")
-                            : "fas fa-sort-amount-down";
+                    // Обновление иконок
+                    const nameIcon = document.querySelector('.sort-btn[data-sort="name"] i');
+                    const progIcon = document.querySelector('.sort-btn[data-sort="progress"] i');
+                    if (sortBy === "name") {
+                        nameIcon.className = sortOrder === "asc" ? "fas fa-sort-alpha-down" : "fas fa-sort-alpha-up";
+                        progIcon.className = "fas fa-sort-amount-down";
+                    } else {
+                        progIcon.className = sortOrder === "desc" ? "fas fa-sort-amount-down" : "fas fa-sort-amount-up";
+                        nameIcon.className = "fas fa-sort-alpha-down";
+                    }
 
                     renderStudentsList(studentSearchEl.value);
                 });
             });
 
-            mobileMenuBtn.addEventListener("click", () => {
-                studentsPanel.classList.toggle("open");
-            });
-
+            mobileMenuBtn.addEventListener("click", () => studentsPanel.classList.toggle("open"));
             closeModalBtn.addEventListener("click", closeCommentModal);
             closeCommentBtn.addEventListener("click", closeCommentModal);
-
-            window.addEventListener("click", (e) => {
-                if (e.target === commentModal) {
-                    closeCommentModal();
-                }
-            });
-
-            if (students.length > 0) {
-                selectStudent(students[0].id);
-            }
-
+            window.addEventListener("click", e => { if (e.target === commentModal) closeCommentModal(); });
             window.addEventListener("resize", () => {
-                if (window.innerWidth > 768) {
-                    studentsPanel.classList.remove("open");
-                }
+                if (window.innerWidth > 768) studentsPanel.classList.remove("open");
             });
+
+            if (students.length > 0) selectStudent(students[0].id);
         };
 
-        // Запуск приложения
         document.addEventListener("DOMContentLoaded", initApp);
     </script>
 </body>
