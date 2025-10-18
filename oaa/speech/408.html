@@ -925,7 +925,7 @@
                     // Сортировка по прогрессу
                     const progressDiff = a.progress - b.progress;
                     if (progressDiff !== 0) {
-                        return sortOrder === "asc" ? progressDiff : -progressDiff;
+                        return sortOrder === "desc" ? progressDiff : -progressDiff;
                     }
                     // Вторичная сортировка по имени для стабильности
                     const nameComparison = a.name.localeCompare(b.name);
