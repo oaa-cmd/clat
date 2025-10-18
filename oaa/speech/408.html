@@ -1000,13 +1000,18 @@
             // Сортировка студентов
             const sortedStudents = [...students].sort((a, b) => {
                 if (sortBy === "name") {
-                    return sortOrder === "asc" 
-                        ? a.name.localeCompare(b.name) 
-                        : b.name.localeCompare(a.name);
+					const nameComparison = a.name.localeCompare(b.name);
+                    return sortOrder === "asc" ? nameComparison : -nameComparison;
                 } else {
-                    return sortOrder === "asc" 
-                        ? a.progress - b.progress 
-                        : b.progress - a.progress;
+					// Сортировка по прогрессу
+					const progressDiff = a.progress - b.progress;
+					if (progressDiff !== 0) {
+						 return sortOrder === "asc" ? progressDiff : -progressDiff;
+						}
+					// Если прогресс одинаковый — сортируем по имени (стабилизация)
+					return sortOrder === "asc"
+						? a.name.localeCompare(b.name)
+						: b.name.localeCompare(a.name);
                 }
             });
             
