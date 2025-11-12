@@ -651,7 +651,7 @@
 
         const calculateProgress = (labs) => {
             if (!labs || labs.length === 0) return 0;
-            return labs.filter(lab => lab.status === "completed").length / labs.length;
+            return labs.filter(lab => lab.status === "completed" || lab.status === "checking").length / labs.length;
         };
 
         const students = appData.students.map(student => ({
