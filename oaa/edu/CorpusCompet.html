@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kmp+</title>
+    <style>
+        /* Основные стили */
+        :root {
+            --primary-color: #325980;
+            --secondary-color: #4CAF50;
+            --background-color: #f5f5f5;
+            --content-bg: #ffffff;
+            --text-color: #333333;
+            --header-text-color: #ffffff;
+            --menu-bg: #ffffff;
+            --menu-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+			  --accent11: #4caf50;
+		--accent12: #4cafff;
+		--accent13: #ffaf50;
+		--accent14: #821978;
+        }
+
+        /* Темная тема */
+        [data-theme="dark"] {
+            --primary-color: #3e76ad;
+            --secondary-color: #388e3c;
+            --background-color: #000000;
+            --content-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --header-text-color: #ffffff;
+            --menu-bg: #000000;
+            --menu-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding-top: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--header-text-color);
+            padding: 20px 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 2px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* Меню навигации */
+        .menu {
+            background-color: var(--menu-bg);
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--menu-shadow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+		
+		
+		.menu-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center; /* Изменено на center */
+}
+
+        .menu-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .menu-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 10px solid transparent;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        /* Секции контента */
+        .section {
+            background-color: var(--content-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Выделение важного */
+        .important {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .note {
+            background-color: rgba(50, 89, 128, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        /* Таблицы */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        /* Списки */
+        ul, ol {
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Адаптивный дизайн */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .menu {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .menu-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .theme-toggle {
+                margin-top: 10px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+		
+					.kmp11, .example {
+      background: rgba(76, 175, 80, 0.1);
+      border-left: 4px solid var(--accent11);
+      padding: 10px 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+		.kmp12, .example {
+      background: rgba(95, 182, 237, 0.1);
+      border-left: 4px solid var(--accent12);
+      padding: 10px 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+ 
+		.kmp13, .example {
+      background: rgba(205, 170, 110, 0.1);
+      border-left: 4px solid var(--accent13);
+      padding: 10px 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+		.kmp14, .example {
+      background: rgba(205, 110, 200, 0.1);
+      border-left: 4px solid var(--accent14);
+      padding: 10px 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+             <h1>Corpus: Сompetencies</h1>
+            <p>необходимые компетенции для пользователя лингвистических корпусов</p>
+        </header>
+
+        <nav class="menu">
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="scrollToSection('1')">Базовые</button>
+                <button class="menu-btn" onclick="scrollToSection('2')">Экспертные</button>
+                <button class="menu-btn" onclick="scrollToSection('3')">Мета уровень</button>
+                <button class="menu-btn" onclick="scrollToSection('4')">Форматы данных</button>
+				
+				                                    </div>
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему">☀️</button>
+        </nav>
+
+<section id="1" class="section"> <h2 class="section-title">Базовые компетенции пользователя</h2> <div class="001"> <h3 class="001-title">Фундаментальные навыки для начала работы с корпусами</h3> <div class="001-card"> <h4>Техническая грамотность</h4> <p>Студент должен уметь работать с корпусными интерфейсами: понимать структуру корпуса, использовать поисковые запросы, фильтры и экспортировать данные.</p> <p>Знакомство с инструментами вроде Sketch Engine, AntConc, РНК или OpenSubtitles — важный шаг к самостоятельному анализу.</p> <p><strong>Примеры навыков:</strong></p> <ul> <li>Поиск словоформ и лемм</li> <li>Фильтрация по частям речи и меткам</li> </ul> <p><strong>Пояснение:</strong> Эти навыки позволяют студенту перейти от интуитивного анализа к формализованному наблюдению.</p> </div> </div>
+
+<div class="001"> <h3 class="001-title">Лингвистическая осведомлённость</h3> <div class="001-card"> <h4>Понимание аннотаций</h4> <p>Студент должен понимать, как корпус размечен: какие теги используются, как устроена морфологическая, синтаксическая и семантическая разметка.</p> <p>Это включает знание POS-тегов, грамматических категорий, а также различий между автоматической и ручной аннотацией.</p> <p><strong>Примеры тегов:</strong></p> <ul> <li>POS: NOUN, VERB, ADJ</li> <li>Граммемы: Gen, Plur, Past</li> </ul> <p><strong>Пояснение:</strong> Без понимания аннотаций невозможно корректно интерпретировать корпусные данные.</p> </div> </div>
+
+<div class="table-kmp"> <table class="table"> <thead><tr><th>Компетенция</th><th>Инструмент</th></tr></thead> <tr><td>Поиск словоформ</td><td>Sketch Engine</td></tr> <tr><td>Анализ коллокаций</td><td>AntConc</td></tr> <tr><td>Работа с частотностью</td><td>РНК</td></tr> </table> </div> <div class="kmp11"><strong>Примечание:</strong> Эти навыки формируют основу для перехода к более сложным корпусным исследованиям.</div> <div class="kmp12"><strong>Важно:</strong> Необходимо осознавать, что корпус — это не «вся реальность», а выборка с ограничениями.</div> </section>
+
+
+
+
+<section id="2" class="section"> <h2 class="section-title">Экспертные компетенции исследователя</h2> <div class="001"> <h3 class="001-title">Продвинутые навыки для научной работы</h3> <div class="001-card"> <h4>Программирование и автоматизация</h4> <p>Исследователь должен уметь писать скрипты на Python или R для обработки больших массивов данных, создания собственных запросов и визуализации результатов.</p> <p>Это включает работу с библиотеками NLTK, pandas, spaCy, а также создание собственных корпусных фильтров и парсеров.</p> <p><strong>Примеры задач:</strong></p> <ul> <li>Автоматическая лемматизация и токенизация</li> <li>Сбор статистики по коллокациям</li> </ul> <p><strong>Пояснение:</strong> Программирование позволяет выйти за рамки готовых интерфейсов и строить собственные исследовательские инструменты.</p> </div> </div>
+
+<div class="001"> <h3 class="001-title">Теоретическая интеграция</h3> <div class="001-card"> <h4>Связь корпуса с лингвистической теорией</h4> <p>Корпус — это не просто источник данных, а способ проверки гипотез в прагматике, семантике, дискурсе, социолингвистике.</p> <p>Исследователь должен уметь формулировать теоретические ожидания и проверять их на корпусе, интерпретируя результаты в контексте научной традиции.</p> <p><strong>Примеры подходов:</strong></p> <ul> <li>Проверка гипотез о вежливости в диалогах</li> <li>Анализ семантических сдвигов в исторических корпусах</li> </ul> <p><strong>Пояснение:</strong> Корпус становится инструментом теоретической аргументации, а не просто иллюстрацией.</p> </div> </div>
+
+<div class="table-kmp"> <table class="table"> <thead><tr><th>Компетенция</th><th>Пример применения</th></tr></thead> <tr><td>Статистический анализ</td><td>MI-score, t-score, логарифмы</td></tr> <tr><td>Сравнение корпусов</td><td>Синхронные vs диахронные</td></tr> <tr><td>Создание корпуса</td><td>Сбор, очистка, аннотация</td></tr> </table> </div> <div class="kmp11"><strong>Примечание:</strong> Экспертные компетенции требуют не только технической подготовки, но и методологической зрелости.</div> <div class="kmp12"><strong>Важно:</strong> Исследователь должен уметь критически оценивать корпус как источник знания, а не как «объективную реальность».</div> <div class="kmp14"><strong>Пояснение:</strong> Продвинутый уровень предполагает способность к метаанализу и созданию новых корпусных ресурсов.</div> </section>
+
+<section id="3" class="section"> <h2 class="section-title">Эпистемологическая чувствительность</h2> <div class="001"> <h3 class="001-title">Корпус как конструкция знания</h3> <div class="001-card"> <h4>Критическое мышление о природе корпуса</h4> <p>Корпус — это не нейтральный контейнер, а результат отбора, аннотации, идеологических решений. Важно понимать, кто создаёт корпус, какие тексты включены, какие исключены.</p> <p>Частотность не равна значимости: редкие явления могут быть более информативны, чем частые. Интерпретация требует контекста.</p> <p><strong>Ключевые вопросы:</strong></p> <ul> <li>Какие жанры представлены?</li> <li>Какие социальные группы репрезентированы?</li> </ul> <p><strong>Пояснение:</strong> Эпистемологическая чувствительность позволяет избежать наивного реализма и видеть корпус как социотехнический артефакт.</p> </div> </div>
+
+<div class="table-kmp"> <table class="table"> <thead><tr><th>Тип корпуса</th><th>Эпистемологические риски</th></tr></thead> <tr><td>Медиакорпус</td><td>Идеологическая селекция, жанровая однородность</td></tr> <tr><td>Исторический корпус</td><td>Архаизация, отсутствие устной речи</td></tr> <tr><td>Устный корпус</td><td>Трудности транскрипции, потери интонации</td></tr> </table> </div> <div class="kmp11"><strong>Примечание:</strong> Эпистемологическая чувствительность — это не отказ от корпуса, а более глубокое его понимание.</div> <div class="kmp12"><strong>Важно:</strong> Студенту и исследователю необходимо уметь задавать вопросы к корпусу, а не только извлекать из него данные.</div> <div class="kmp14"><strong>Пояснение:</strong> Корпус — это зеркало, но не всего языка, а определённой его версии, созданной по определённым правилам.</div> </section>
+
+
+<section id="4" class="section"> <h2 class="section-title">Основные корпусные форматы файлов</h2>
+
+<div class="001"> <h3 class="001-title">Форматы, обеспечивающие хранение, аннотацию и обработку корпусных данных</h3>
+
+<div class="001-card"> <h4>Текстовые форматы</h4> <p>Наиболее распространённые форматы для хранения корпусных данных — это текстовые файлы, которые легко читаются и обрабатываются как вручную, так и программно.</p> <p>Они могут содержать как «сырые» тексты, так и размеченные данные с тегами, метками и структурой.</p> <p><strong>Основные форматы:</strong></p> <ul> <li><strong>.txt</strong> — простой текст без разметки</li> <li><strong>.csv</strong> — табличные данные, часто используются для частотных списков</li> <li><strong>.tsv</strong> — аналог .csv, но с табуляцией вместо запятой</li> <li><strong>.xml</strong> — структурированный формат с тегами, часто используется для аннотированных корпусов</li> <li><strong>.json</strong> — формат для хранения структурированных данных, удобен для программной обработки</li> </ul> <p><strong>Пояснение:</strong> Знание этих форматов позволяет студенту работать с корпусами в разных средах — от Sketch Engine до Python-скриптов.</p> </div> </div>
+
+<div class="001"> <h3 class="001-title">Форматы аннотации и метаданных</h3>
+
+<div class="001-card"> <h4>Разметка и описание текстов</h4> <p>Корпусные файлы часто сопровождаются аннотацией — грамматической, синтаксической, семантической — и метаданными о тексте (автор, жанр, дата).</p> <p>Форматы аннотации позволяют структурировать эти данные и использовать их в поиске и анализе.</p> <p><strong>Типичные форматы:</strong></p> <ul> <li><strong>.xml</strong> — используется для TEI, Universal Dependencies, Penn Treebank</li> <li><strong>.conllu</strong> — формат для синтаксической разметки в Universal Dependencies</li> <li><strong>.vert</strong> — вертикальный формат: одна строка — одна словоформа с тегами</li> <li><strong>.pos</strong> — файл с POS-тегами, часто используется в паре с .txt</li> </ul> <p><strong>Пояснение:</strong> Умение читать и интерпретировать эти форматы — ключ к пониманию структуры корпуса и его аналитического потенциала.</p> </div> </div>
+
+<div class="table-kmp"> <table class="table"> <thead><tr><th>Формат</th><th>Назначение</th></tr></thead> <tr><td>.txt</td><td>Хранение «сырых» текстов</td></tr> <tr><td>.csv / .tsv</td><td>Частотные списки, табличные данные</td></tr> <tr><td>.xml</td><td>Разметка, структура, метаданные</td></tr> <tr><td>.json</td><td>Структурированные данные для программной обработки</td></tr> <tr><td>.conllu</td><td>Синтаксическая аннотация (UD)</td></tr> <tr><td>.vert</td><td>Вертикальный корпусный формат</td></tr> </table> </div>
+
+<div class="kmp11"><strong>Примечание:</strong> Некоторые форматы (например, .xml и .conllu) требуют базовых знаний о деревьях, тегах и иерархии данных.</div> <div class="kmp12"><strong>Важно:</strong> Студент должен не только уметь открывать эти файлы, но и понимать их структуру и назначение.</div> <div class="kmp14"><strong>Пояснение:</strong> Знание форматов — это мост между корпусной теорией и практикой: от чтения до автоматизированного анализа.</div> </section>
+
+			
+<footer class="footer">
+<div class="container">
+<p>© 2026 | kmp | CC BY-NC-SA 4.0<br>
+для всех</p>
+</div>
+</footer>
+<div style="position: fixed; bottom: 10px; color: #777777; right: 30px; opacity: 0.3; font-size: 14px;">kmp+</div>
+    <script>
+        // Функция для плавной прокрутки к sectionу
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const menuHeight = document.querySelector('.menu').offsetHeight;
+            
+            window.scrollTo({
+                top: section.offsetTop - menuHeight - 20,
+                behavior: 'smooth'
+            });
+        }
+
+        // Функция для переключения темы
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        });
+
+        // Анимация появления секций при прокрутке
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            sections.forEach(section => {
+                section.classList.remove('fade-in');
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
