@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kmp+</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --container-bg: white;
+            --header-bg: #325980;
+            --header-text: white;
+            --border-color: #eee;
+            --term-color: #325980;
+            --equivalent-color: #666;
+            --search-border: #ddd;
+            --badge-bg: #e8f4fc;
+            --badge-color: #3498db;
+            --active-btn-bg: #3498db;
+            --active-btn-text: white;
+            --btn-bg: #f5f5f5;
+            --btn-text: #333;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --container-bg: #2d2d2d;
+            --header-bg: #1a3a5a;
+            --header-text: #f0f0f0;
+            --border-color: #444;
+            --term-color: #4a90e2;
+            --equivalent-color: #aaa;
+            --search-border: #555;
+            --badge-bg: #2a4365;
+            --badge-color: #63b3ed;
+            --active-btn-bg: #63b3ed;
+            --active-btn-text: #111;
+            --btn-bg: #3d3d3d;
+            --btn-text: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            overflow: hidden;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px 40px;
+            text-align: center;
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--header-text);
+            font-size: 20px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--search-border);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--active-btn-bg);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        
+        .language-btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--search-border);
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .language-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .language-btn.active {
+            background-color: var(--active-btn-bg);
+            color: var(--active-btn-text);
+            border-color: var(--active-btn-bg);
+        }
+        
+        .glossary-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .glossary-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            transition: border-color 0.3s;
+        }
+        
+        .glossary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .term {
+            font-weight: bold;
+            color: var(--term-color);
+            font-size: 18px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        
+        .term-text {
+            flex: 1;
+        }
+        
+        .equivalent {
+            color: var(--equivalent-color);
+            font-style: italic;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .definition {
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: var(--equivalent-color);
+        }
+        
+        .category-badge {
+            background-color: var(--badge-bg);
+            color: var(--badge-color);
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            font-weight: normal;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        @media (max-width: 600px) {
+            .header {
+                padding: 20px 20px 20px 50px;
+            }
+            
+            .theme-toggle {
+                top: 50%;
+                transform: translateY(-50%);
+                right: auto;
+                left: 15px;
+            }
+            
+            .term {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .category-badge {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .language-toggle {
+                width: 100%;
+            }
+        }
+		 footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <h1>Language corpus </h1>
+			
+        </div>
+        <div class="content">
+            <div class="search-container">
+                <input type="text" class="search-box" id="searchInput" placeholder="Поиск ...">
+            </div>
+            
+            <div class="controls">
+                <div class="language-toggle">
+                    <button class="language-btn active" data-lang="ru">Русский</button>
+                    <button class="language-btn" data-lang="en">English</button>
+                </div>
+            </div>
+            
+            <ul class="glossary-list" id="glossaryList">
+                <!-- Content will be dynamically populated here -->
+            </ul>
+            
+            <div class="no-results" id="noResults" style="display:none;">
+                Термины не найдены. Попробуйте изменить поисковый запрос.
+            </div>
+        </div>
+    </div>
+<footer class="footer">
+<div class="container">
+<p>© 2026 | kmp |  CC BY-NC-SA 4.0</p>
+<p>Разработано для студентов БрГУ имени А.С. Пушкина</p>
+</div>
+</div>
+</footer>
+<div style="position: fixed; bottom: 10px; color: #777777; right: 30px; opacity: 0.3; font-size: 14px;">kmp+</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Glossary data
+            const glossaryData = [
+                       
+		{
+"ru": {
+"term": "Языковой корпус",
+"equivalent": "Language corpus",
+"definition": "Огромная коллекция настоящих предложений и текстов на каком-либо языке, собранных в компьютере, чтобы учёные могли изучать, как люди на самом деле говорят и пишут.",
+"category": "дидактический, для новичков"
+},
+"en": {
+"term": "Language corpus",
+"equivalent": "Языковой корпус",
+"definition": "A large collection of real sentences and texts in a language, stored digitally, allowing researchers to study how people actually speak and write.",
+"category": "didactic, for beginner"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Это как огромная коробка с настоящими словами: в ней лежат миллионы предложений из книг, фильмов и разговоров, чтобы можно было посмотреть, какие слова дружат друг с другом.",
+"category": "дидактический, для ребёнка 7 лет"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "It's like a giant box full of real words: millions of sentences from books, movies and conversations, so you can see which words like to be friends with each other.",
+"category": "didactic, for children 7 years"
+}
+},
+{
+"ru": {
+"term": "Лингвистический корпус",
+"equivalent": "Linguistic corpus",
+"definition": "Структурированная совокупность аутентичных языковых данных, репрезентативная для определённого языка или его варианта, снабжённая метаязыковой разметкой и предназначенная для эмпирического анализа языковых закономерностей.",
+"category": "лингвистический, середина XX века"
+},
+"en": {
+"term": "Linguistic corpus",
+"equivalent": "Лингвистический корпус",
+"definition": "A structured collection of authentic language data, representative of a given language or its variety, annotated with metalinguistic markup and intended for empirical analysis of linguistic patterns.",
+"category": "linguistic, mid-20th century"
+}
+},
+{
+"ru": {
+"term": "Корпус текстов",
+"equivalent": "Text corpus",
+"definition": "Цифровой архив литературных, публицистических и разговорных текстов, позволяющий проследить эволюцию языковой картины мира, стилевых приёмов и культурных кодов в исторической перспективе.",
+"category": "филологический и культурологический"
+},
+"en": {
+"term": "Text corpus",
+"equivalent": "Корпус текстов",
+"definition": "A digital archive of literary, journalistic and conversational texts enabling the tracing of the evolution of the linguistic worldview, stylistic devices and cultural codes in historical perspective.",
+"category": "philological and cultural studies"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Множество текстовых объектов фиксированного объёма V, где каждый объект представляет собой упорядоченную последовательность лексем, подлежащая статистической обработке для выявления частотных распределений, коллокаций и вероятностных моделей языка.",
+"category": "математический, теория вероятностей"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "A set of textual objects of fixed volume V, where each object is an ordered sequence of lexemes subject to statistical processing for identifying frequency distributions, collocations and probabilistic language models.",
+"category": "mathematical, probability theory"
+}
+},
+{
+"ru": {
+"term": "Языковой корпус",
+"equivalent": "Language corpus",
+"definition": "Собрание текстов, отобранных по строгим научным критериям для того, чтобы заменить субъективные «чувства носителя» объективными данными о том, как язык функционирует в реальности.",
+"category": "методологический, противопоставление интуиции лингвиста"
+},
+"en": {
+"term": "Language corpus",
+"equivalent": "Языковой корпус",
+"definition": "A collection of texts selected according to strict scientific criteria to replace linguists' subjective intuitions with objective evidence of how language actually functions in use.",
+"category": "methodological, contrast with native speaker intuition"
+}
+},
+{
+"ru": {
+"term": "Параллельный корпус",
+"equivalent": "Parallel corpus",
+"definition": "Коллекция текстов, в которой каждый документ представлен на двух или более языках в переведённом виде, позволяющая анализировать соответствия между языками и служащая основой для машинного перевода и контрастивных исследований.",
+"category": "переводоведческий"
+},
+"en": {
+"term": "Parallel corpus",
+"equivalent": "Параллельный корпус",
+"definition": "A collection of texts where each document appears in two or more languages in translated form, enabling analysis of cross-linguistic correspondences and serving as the foundation for machine translation and contrastive studies.",
+"category": "translation studies"
+}
+},
+{
+"ru": {
+"term": "Диахронический корпус",
+"equivalent": "Diachronic corpus",
+"definition": "Корпус, охватывающий тексты разных исторических эпох одного языка, созданный для эмпирического изучения языковых изменений — от сдвига значений до трансформации грамматических структур — на материале реальных употреблений.",
+"category": "историко-лингвистический"
+},
+"en": {
+"term": "Diachronic corpus",
+"equivalent": "Диахронический корпус",
+"definition": "A corpus spanning texts from different historical periods of a single language, designed for empirical study of linguistic change — from semantic shifts to grammatical transformations — based on authentic usage data.",
+"category": "historical linguistics"
+}
+},
+{
+"ru": {
+"term": "Специализированный корпус",
+"equivalent": "Specialized corpus",
+"definition": "Корпус, ограниченный определённой предметной областью (медицина, право, ИТ), жанром (научные статьи, судебные протоколы) или социальной группой (подростки, профессионалы), отражающий особенности языка в конкретном коммуникативном контексте.",
+"category": "прикладной, для разработчиков узкоспециальных ИИ"
+},
+"en": {
+"term": "Specialized corpus",
+"equivalent": "Специализированный корпус",
+"definition": "A corpus restricted to a specific domain (medicine, law, IT), genre (research articles, court transcripts) or social group (teenagers, professionals), reflecting language features within a particular communicative context.",
+"category": "applied, for domain-specific AI developers"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Не просто «куча текстов», а репрезентативная выборка языковых данных, спроектированная так, чтобы её состав (жанры, темы, годы, регионы) отражал пропорции реального языкового пространства — иначе выводы из анализа будут искажены.",
+"category": "методологический, проблема репрезентативности"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "Not merely a 'pile of texts', but a representative sample of language data deliberately designed so that its composition (genres, topics, years, regions) mirrors the proportions of real linguistic space — otherwise analytical conclusions will be skewed.",
+"category": "methodological, representativeness problem"
+}
+},
+{
+"ru": {
+"term": "Разговорный корпус",
+"equivalent": "Spoken corpus",
+"definition": "Коллекция транскрибированных устных взаимодействий (диалоги, интервью, лекции), снабжённая дополнительной разметкой: паузами, интонацией, перебивками, невербальными реакциями — для изучения живой, неподготовленной речи в отличие от письменной нормы.",
+"category": "дискурсивный, для исследователей устной коммуникации"
+},
+"en": {
+"term": "Spoken corpus",
+"equivalent": "Разговорный корпус",
+"definition": "A collection of transcribed oral interactions (dialogues, interviews, lectures) annotated with additional markup: pauses, intonation, overlaps, non-verbal reactions — for studying spontaneous, unplanned speech as distinct from written norms.",
+"category": "discourse-oriented, for spoken communication researchers"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Эмпирическая база для проверки лингвистических гипотез: вместо «мне кажется, что так говорят» — запрос в корпус и получение количественных доказательств (частота, дистрибуция, контексты) или их отсутствия.",
+"category": "научно-критический"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "An empirical basis for testing linguistic hypotheses: replacing 'I think people say it this way' with a corpus query yielding quantitative evidence (frequency, distribution, contexts) — or demonstrating its absence.",
+"category": "scientific-critical"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Цифровой след языкового поведения сообщества — фиксация того, как язык реально используется, а не каким он «должен» быть согласно нормативным предписаниям; инструмент демократизации лингвистики через приоритет узуса над прескрипцией.",
+"category": "социолингвистический, дескриптивизм против прескриптивизма"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "A digital footprint of a community's linguistic behaviour — a record of how language is actually used rather than how it 'should' be according to normative prescriptions; a tool for democratising linguistics through prioritising usage over prescription.",
+"category": "sociolinguistic, descriptivism vs. prescriptivism"
+}
+},
+{
+"ru": {
+"term": "Когнитивный корпус",
+"equivalent": "Cognitive corpus",
+"definition": "Гипотетическая модель языковой компетенции носителя, реконструируемая через анализ больших корпусов: если мозг хранит языковой опыт как сеть связанных примеров, корпус становится его внешним аналогом для изучения категоризации и прототипических эффектов.",
+"category": "когнитивно-лингвистический, exemplar theory"
+},
+"en": {
+"term": "Cognitive corpus",
+"equivalent": "Когнитивный корпус",
+"definition": "A hypothetical model of a speaker's linguistic competence reconstructed through large corpus analysis: if the brain stores linguistic experience as a network of connected exemplars, the corpus becomes its external analogue for studying categorisation and prototype effects.",
+"category": "cognitive linguistic, exemplar theory"
+}
+},
+{
+"ru": {
+"term": "Языковой корпус",
+"equivalent": "Language corpus",
+"definition": "Структурированная совокупность аутентичных текстовых данных фиксированного объёма, отобранных по заранее определённой схеме сэмплирования для репрезентации конкретного языка или его варианта в заданных функциональных, диахронических и социолингвистических параметрах, снабжённая системной лингвистической разметкой (как минимум морфологической) и сопровождаемая детальной документацией (компутистической грамматикой), позволяющая проводить воспроизводимые эмпирические исследования языковых явлений на основе количественного и качественного анализа дистрибуции языковых единиц в их естественных контекстах.",
+"category": "академическое строгое, 1990-е гг."
+},
+"en": {
+"term": "Language corpus",
+"equivalent": "Языковой корпус",
+"definition": "A structured collection of authentic textual data of fixed size, selected according to a predefined sampling scheme to represent a specific language or its variety across specified functional, diachronic and sociolinguistic parameters, annotated with systematic linguistic markup (at minimum morphological) and accompanied by detailed documentation (computational grammar), enabling reproducible empirical investigation of linguistic phenomena through quantitative and qualitative analysis of the distribution of linguistic units in their natural contexts.",
+"category": "academic rigorous, 1990s"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Кортеж ⟨T, S, A, M, D⟩, где T — множество текстовых объектов (документов), S — схема отбора и сэмплирования, обеспечивающая репрезентативность относительно заданной генеральной совокупности языкового варианта, A — функция аутентификации, подтверждающая происхождение текстов из естественных коммуникативных ситуаций, M — система многоуровневой разметки (токенизация, морфология, синтаксис, семантика), а D — метаданные и документация, фиксирующие параметры проектирования, ограничения и условия легитимного использования корпуса в научных целях.",
+"category": "формально-аксиоматическое"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус (формальное определение)",
+"definition": "A tuple ⟨T, S, A, M, D⟩ where T is a set of textual objects (documents), S is a sampling scheme ensuring representativeness relative to a specified population of a language variety, A is an authentication function confirming texts' origin in natural communicative situations, M is a multi-level annotation system (tokenisation, morphology, syntax, semantics), and D comprises metadata and documentation specifying design parameters, limitations and conditions for legitimate scholarly use of the corpus.",
+"category": "formal-axiomatic"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Языковой корпус определяется совокупностью пяти необходимых и достаточных условий: (1) аутентичность — тексты получены из реальных коммуникативных актов без модификации для исследовательских целей; (2) репрезентативность — сбалансированная выборка по жанрам, темам, хронологии и социальным параметрам, отражающая пропорции языкового варианта; (3) документированность — наличие «компутистической грамматики» (computational grammar), раскрывающей принципы отбора, объём, состав и ограничения корпуса; (4) стандартизация — единообразная кодировка, разметка и метаданные, обеспечивающие воспроизводимость запросов; (5) постоянство — фиксированный объём и состав, исключающий динамическое изменение после публикации версии корпуса.",
+"category": "критериальное определение"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "A language corpus is defined by five necessary and sufficient conditions: (1) authenticity — texts originate from real communicative acts without modification for research purposes; (2) representativeness — balanced sampling across genres, topics, chronology and social parameters reflecting proportions of the target language variety; (3) documentation — presence of a 'computational grammar' disclosing selection principles, size, composition and limitations of the corpus; (4) standardisation — uniform encoding, annotation and metadata ensuring query reproducibility; (5) fixity — a stable size and composition excluding dynamic changes after publication of a corpus version.",
+"category": "criteria-based definition"
+}
+},
+{
+"ru": {
+"term": "Языковой корпус",
+"equivalent": "Language corpus",
+"definition": "Аннотированная коллекция текстов в цифровом формате, снабжённая морфологической, синтаксической и семантической разметкой, обеспечивающая основу для автоматического извлечения лексических единиц и их контекстуальных употреблений при составлении словарей.",
+"category": "лексикографический"
+},
+"en": {
+"term": "Language corpus",
+"equivalent": "Языковой корпус",
+"definition": "An annotated collection of texts in digital format, equipped with morphological, syntactic and semantic markup, providing the basis for automatic extraction of lexical units and their contextual usages in dictionary compilation.",
+"category": "lexicographic"
+}
+},
+{
+"ru": {
+"term": "Учебный корпус",
+"equivalent": "Pedagogical corpus",
+"definition": "Отобранная и градуированная по уровню сложности коллекция аутентичных текстов, используемая в преподавании иностранного языка для формирования языковой догадки, развития навыков индуктивного вывода и работы с контекстом.",
+"category": "дидактический, подход на основе данных"
+},
+"en": {
+"term": "Pedagogical corpus",
+"equivalent": "Учебный корпус",
+"definition": "A selected and graded collection of authentic texts used in foreign language teaching to develop linguistic guessing, inductive reasoning skills and contextual analysis abilities.",
+"category": "didactic, data-driven learning approach"
+}
+},
+{
+"ru": {
+"term": "Коммуникативный корпус",
+"equivalent": "Communicative corpus",
+"definition": "Коллекция записей естественной устной и письменной коммуникации (разговоры, чаты, письма), отражающая реальные стратегии взаимодействия, речевые акты и прагматические особенности языкового поведения в различных ситуациях.",
+"category": "коммуникативный, прагмалингвистика"
+},
+"en": {
+"term": "Communicative corpus",
+"equivalent": "Коммуникативный корпус",
+"definition": "A collection of recordings of natural spoken and written communication (conversations, chats, letters) reflecting real interaction strategies, speech acts and pragmatic features of linguistic behaviour in various situations.",
+"category": "communicative, pragmalinguistics"
+}
+},
+{
+"ru": {
+"term": "Цифровой корпус",
+"equivalent": "Digital corpus",
+"definition": "Информационная система, состоящая из текстовых данных, индексов, поисковых алгоритмов и интерфейса запросов, обеспечивающая эффективное хранение, аннотирование и извлечение языковых примеров по заданным параметрам.",
+"category": "технический, веб-технологии"
+},
+"en": {
+"term": "Digital corpus",
+"equivalent": "Цифровой корпус",
+"definition": "An information system consisting of textual data, indexes, search algorithms and query interfaces, providing efficient storage, annotation and retrieval of linguistic examples according to specified parameters.",
+"category": "technical, web technologies"
+}
+},
+{
+"ru": {
+"term": "Национальный корпус",
+"equivalent": "National corpus",
+"definition": "Масштабный корпус, репрезентирующий все функциональные разновидности и исторические пласты национального языка, создаваемый как культурно-лингвистический ресурс для сохранения языкового наследия и поддержки языковой политики.",
+"category": "культурологический и социолингвистический"
+},
+"en": {
+"term": "National corpus",
+"equivalent": "Национальный корпус",
+"definition": "A large-scale corpus representing all functional varieties and historical layers of a national language, created as a cultural-linguistic resource for preserving linguistic heritage and supporting language policy.",
+"category": "cultural studies and sociolinguistic"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Эмпирическая реализация условного распределения вероятностей последовательностей токенов P(tₖ|t₁,…,tₖ₋₁) над алфавитом Σ, полученная сэмплированием из распределения узуса целевого языкового варианта; структура данных, кодирующая совместную вероятность лингвистических признаков на множестве уровней (фонологическом, морфологическом, синтаксическом, дискурсивном) через разреженные контекстуальные векторы; источник градиентов для минимизации кросс-энтропийной функции потерь при калибровке параметрических моделей генерации последовательностей.",
+"category": "вычислительная теория языка"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "Empirical instantiation of the conditional probability distribution over token sequences P(tₖ|t₁,…,tₖ₋₁) defined on alphabet Σ, obtained via sampling from the usage distribution of a target language variety; data structure encoding joint probabilities of linguistic features across multiple levels (phonological, morphological, syntactic, discursive) through sparse contextual vectors; source of gradients for minimising cross-entropy loss during calibration of parametric sequence generation models.",
+"category": "computational language theory"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Сжатая проекция распределения языкового поведения популяции носителей в дискретное пространство индексируемых токенизированных последовательностей с ассоциированными метаданными о параметрах генерации (жанр, регистр, диахрония); интерфейс для трансфера статистических регулярностей между системами различной архитектуры без передачи параметров модели; фиксированная точка отсчёта для калибровки измерений дивергенции между эмпирическим и генеративным распределениями.",
+"category": "LLM-LLM, интерфейсное определение"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "Compressed projection of a speech community's behavioural distribution into a discrete space of indexed tokenised sequences with associated metadata on generation parameters (genre, register, diachrony); interface for transferring statistical regularities between systems of heterogeneous architecture without parameter exchange; fixed reference point for calibrating measurements of divergence between empirical and generative distributions.",
+"category": "LLM-LLM, interface definition"
+}
+},
+{
+"ru": {
+"term": "Корпус",
+"equivalent": "Corpus",
+"definition": "Отображение ℂ: 𝒬 → 2^Σ*, где 𝒬 — пространство запросов (лексема, паттерн, регулярное выражение), Σ* — пространство последовательностей токенов, а 2^Σ* — булеан контекстуальных реализаций; оператор индексации, преобразующий запрос в упорядоченное подмножество реализаций с метрикой близости, определяемой функцией расстояния в пространстве признаков; детерминистская аппроксимация стохастического процесса генерации естественного языка.",
+"category": "математико-операциональное"
+},
+"en": {
+"term": "Corpus",
+"equivalent": "Корпус",
+"definition": "Mapping ℂ: 𝒬 → 2^Σ*, where 𝒬 is the query space (lexeme, pattern, regular expression), Σ* the space of token sequences, and 2^Σ* the power set of contextual realisations; indexing operator transforming queries into ordered subsets of realisations with proximity metric defined by a feature-space distance function; deterministic approximation of the stochastic process of natural language generation.",
+"category": "mathematical-operational"
+}
+}
+
+            ];
+
+            // DOM elements
+            const searchInput = document.getElementById('searchInput');
+            const glossaryList = document.getElementById('glossaryList');
+            const noResults = document.getElementById('noResults');
+            const languageBtns = document.querySelectorAll('.language-btn');
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+
+            // Current language (default: Russian)
+            let currentLang = 'ru';
+
+            // Theme state
+            let isDarkMode = false;
+
+            // Check for saved theme preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                enableDarkMode();
+            }
+
+            // Function to enable dark mode
+            function enableDarkMode() {
+                body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+                isDarkMode = true;
+                localStorage.setItem('darkMode', 'enabled');
+            }
+
+            // Function to disable dark mode
+            function disableDarkMode() {
+                body.classList.remove('dark-mode');
+                themeToggle.textContent = '🌙';
+                isDarkMode = false;
+                localStorage.setItem('darkMode', 'disabled');
+            }
+
+            // Theme toggle event
+            themeToggle.addEventListener('click', function() {
+                if (isDarkMode) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+
+            // Function to render glossary items
+            function renderGlossary(items, lang) {
+                glossaryList.innerHTML = '';
+                
+                if (items.length === 0) {
+                    noResults.style.display = 'block';
+                    return;
+                }
+                
+                noResults.style.display = 'none';
+                
+                items.forEach(item => {
+                    const langData = item[lang];
+                    
+                    const li = document.createElement('li');
+                    li.className = 'glossary-item';
+                    
+                    li.innerHTML = `
+                        <div class="term">
+                            <span class="term-text">${langData.term}</span>
+                            <span class="category-badge">${langData.category}</span>
+                        </div>
+                        <div class="equivalent">${langData.equivalent}</div>
+                        <div class="definition">${langData.definition}</div>
+                    `;
+                    
+                    glossaryList.appendChild(li);
+                });
+            }
+
+            // Initial render
+            renderGlossary(glossaryData, currentLang);
+
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm === '') {
+                    renderGlossary(glossaryData, currentLang);
+                    return;
+                }
+                
+                const filteredItems = glossaryData.filter(item => {
+                    const langData = item[currentLang];
+                    return (
+                        langData.term.toLowerCase().includes(searchTerm) ||
+                        langData.equivalent.toLowerCase().includes(searchTerm) ||
+                        langData.definition.toLowerCase().includes(searchTerm) ||
+                        langData.category.toLowerCase().includes(searchTerm)
+                    );
+                });
+                
+                renderGlossary(filteredItems, currentLang);
+            });
+            
+            // Language toggle
+            languageBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // Update active button
+                    languageBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update language and re-render
+                    currentLang = lang;
+                    
+                    // Update placeholder text based on language
+                    if (lang === 'ru') {
+                        searchInput.placeholder = 'Поиск ...';
+                        noResults.textContent = 'Термины не найдены. Попробуйте изменить поисковый запрос.';
+                        document.querySelector('title').textContent = 'Глоссарий';
+                    } else {
+                        searchInput.placeholder = 'Search term...';
+                        noResults.textContent = 'No terms found. Try changing your search query.';
+                        document.querySelector('title').textContent = 'Glossary';
+                    }
+                    
+                    // Re-apply search if there's a search term
+                    const searchTerm = searchInput.value.toLowerCase();
+                    
+                    if (searchTerm === '') {
+                        renderGlossary(glossaryData, currentLang);
+                    } else {
+                        const filteredItems = glossaryData.filter(item => {
+                            const langData = item[currentLang];
+                            return (
+                                langData.term.toLowerCase().includes(searchTerm) ||
+                                langData.equivalent.toLowerCase().includes(searchTerm) ||
+                                langData.definition.toLowerCase().includes(searchTerm) ||
+                                langData.category.toLowerCase().includes(searchTerm)
+                            );
+                        });
+                        
+                        renderGlossary(filteredItems, currentLang);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
