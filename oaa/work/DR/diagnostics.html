@@ -1,0 +1,867 @@
+
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kmp+</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#ffffff;--bg-secondary:#f5f5f5;--bg-card:#ffffff;
+  --text-primary:#2c2c2c;--text-secondary:#555555;--text-muted:#888888;
+  --accent:#325980;--accent-light:#3498db;--accent-hover:#2980b9;
+  --border:#f1f1f1;--border-strong:#ddd;--shadow:0 2px 16px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.12);--radius:12px;--radius-sm:8px;
+  --correct:#27ae60;--correct-bg:#eafaf1;--wrong:#c0392b;--wrong-bg:#fdedec;
+  --transition:.3s ease;
+}
+[data-theme="dark"]{
+  --bg-primary:#121218;--bg-secondary:#1a1a24;--bg-card:#1e1e2a;
+  --text-primary:#e2e2e8;--text-secondary:#a8a8b4;--text-muted:#6e6e7a;
+  --accent:#5a9fd4;--accent-light:#6db3e8;--accent-hover:#7cc0f0;
+  --border:#2a2a36;--border-strong:#3a3a48;--shadow:0 2px 16px rgba(0,0,0,.3);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
+  --correct:#2ecc71;--correct-bg:#1a2e1a;--wrong:#e74c3c;--wrong-bg:#2e1a1a;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
+  background:var(--bg-secondary);color:var(--text-primary);line-height:1.7;transition:background var(--transition),color var(--transition);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent-light);text-decoration:none}
+/* === HEADER === */
+.header{background:var(--accent);color:#fff;padding:0 2rem;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);transition:background var(--transition)}
+[data-theme="dark"] .header{background:#1a2540}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:1rem}
+.header-title{font-size:1.8rem;font-weight:700;letter-spacing:.02em;line-height:1.3}
+.header-title span{display:block;font-size:.78rem;font-weight:400;opacity:.85;margin-top:2px}
+.theme-btn{background:none;border:2px solid rgba(255,255,255,.3);color:#fff;width:42px;height:42px;
+  border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);flex-shrink:0}
+.theme-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.5);transform:rotate(20deg)}
+/* === MAIN === */
+.main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:2rem 1.5rem 3rem}
+/* === SECTIONS === */
+.section{display:none;animation:fadeUp .5s ease}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* === INFO CARD === */
+.card{background:var(--bg-card);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;
+  box-shadow:var(--shadow);border:1px solid var(--border);transition:all var(--transition)}
+.card-title{font-size:1.35rem;font-weight:700;color:var(--accent);margin-bottom:1rem;padding-bottom:.75rem;
+  border-bottom:3px solid var(--accent-light);display:inline-block}
+.card p,.card li{color:var(--text-secondary);margin-bottom:.6rem;font-size:.97rem}
+.card ul{padding-left:1.5rem}
+.card li{margin-bottom:.5rem}
+.card li::marker{color:var(--accent-light)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem}
+.info-box{background:var(--bg-secondary);border-radius:var(--radius-sm);padding:1.2rem;border-left:4px solid var(--accent-light)}
+.info-box h4{color:var(--accent);font-size:.92rem;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.04em}
+.info-box p{font-size:.88rem;margin:0;color:var(--text-secondary)}
+/* === FORM === */
+.form-group{margin-bottom:1.5rem}
+.form-group label{display:block;font-weight:600;color:var(--accent);margin-bottom:.5rem;font-size:.95rem}
+.form-input{width:100%;padding:.85rem 1.1rem;border:2px solid var(--border-strong);border-radius:var(--radius-sm);
+  font-size:1rem;font-family:inherit;background:var(--bg-card);color:var(--text-primary);
+  transition:all var(--transition);outline:none}
+.form-input:focus{border-color:var(--accent-light);box-shadow:0 0 0 3px rgba(52,152,219,.15)}
+.form-input::placeholder{color:var(--text-muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 2rem;
+  border:none;border-radius:var(--radius-sm);font-size:1rem;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all var(--transition);text-align:center}
+.btn-primary{background:var(--accent-light);color:#fff;box-shadow:0 4px 14px rgba(52,152,219,.3)}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 6px 20px rgba(52,152,219,.35)}
+.btn-secondary{background:var(--bg-secondary);color:var(--accent);border:2px solid var(--border-strong)}
+.btn-secondary:hover{border-color:var(--accent-light);background:var(--bg-card)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-full{width:100%}
+/* === PROGRESS === */
+.progress-wrap{position:sticky;top:64px;z-index:90;background:var(--bg-card);padding:.8rem 0;
+  margin:-2rem -1.5rem 1.5rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.05);transition:all var(--transition)}
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;font-size:.85rem}
+.progress-info span{color:var(--text-secondary);font-weight:500}
+.progress-info .timer{color:var(--accent);font-variant-numeric:tabular-nums}
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-light));
+  border-radius:4px;transition:width .4s ease;width:0%}
+/* === QUESTIONS === */
+.question-card{background:var(--bg-card);border-radius:var(--radius);padding:1.8rem;margin-bottom:1.2rem;
+  box-shadow:var(--shadow);border:2px solid var(--border);transition:all var(--transition)}
+.question-card.answered{border-color:var(--accent-light)}
+.question-card.answered .q-number{background:var(--accent-light);color:#fff}
+.question-header{display:flex;gap:1rem;margin-bottom:1.2rem;align-items:flex-start}
+.q-number{min-width:36px;height:36px;border-radius:50%;background:var(--bg-secondary);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;
+  transition:all var(--transition);border:2px solid var(--border)}
+.q-text{font-weight:600;color:var(--text-primary);font-size:1rem;line-height:1.6;padding-top:4px}
+.options{display:flex;flex-direction:column;gap:.6rem}
+.option{position:relative}
+.option input{position:absolute;opacity:0;width:0;height:0}
+.option label{display:flex;align-items:flex-start;gap:.8rem;padding:.85rem 1.1rem;border-radius:var(--radius-sm);
+  border:2px solid var(--border);cursor:pointer;transition:all var(--transition);font-size:.93rem;
+  color:var(--text-secondary);line-height:1.5}
+.option label:hover{border-color:var(--accent-light);background:rgba(52,152,219,.04)}
+.option input:checked+label{border-color:var(--accent-light);background:rgba(52,152,219,.07);color:var(--text-primary);font-weight:500}
+.option-marker{min-width:26px;height:26px;border-radius:50%;border:2px solid var(--border-strong);
+  display:flex;align-items:center;justify-content:center;transition:all var(--transition);
+  font-size:.75rem;font-weight:700;color:var(--text-muted);flex-shrink:0;margin-top:1px}
+.option input:checked+label .option-marker{background:var(--accent-light);border-color:var(--accent-light);color:#fff}
+.validation-msg{color:var(--wrong);font-size:.88rem;margin-top:1rem;display:none;font-weight:500}
+.validation-msg.visible{display:block;animation:fadeUp .3s ease}
+/* === MODAL === */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;
+  align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg-card);border-radius:var(--radius);max-width:720px;width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalSlide .4s ease}
+@keyframes modalSlide{from{transform:translateY(30px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-header{background:var(--accent);color:#fff;padding:2rem;text-align:center;
+  border-radius:var(--radius) var(--radius) 0 0;position:relative}
+[data-theme="dark"] .modal-header{background:#1a2540}
+.modal-header h2{font-size:1.6rem;margin-bottom:.3rem;letter-spacing:.03em}
+.modal-header p{opacity:.85;font-size:.95rem}
+.modal-body{padding:2rem}
+.result-summary{text-align:center;padding:1.5rem 0;margin-bottom:1.5rem;border-bottom:2px solid var(--border)}
+.result-score{font-size:3.5rem;font-weight:800;color:var(--accent);line-height:1}
+.result-score span{font-size:1.2rem;font-weight:400;color:var(--text-muted)}
+.result-pct{font-size:1.1rem;color:var(--text-secondary);margin:.5rem 0}
+.result-level{display:inline-block;padding:.5rem 1.5rem;border-radius:2rem;font-weight:700;font-size:.95rem;margin:.5rem 0}
+.level-high{background:#eafaf1;color:#27ae60}
+.level-good{background:#eaf6fd;color:#2980b9}
+.level-mid{background:#fef9e7;color:#f39c12}
+.level-low{background:#fdedec;color:#c0392b}
+[data-theme="dark"] .level-high{background:#1a2e1a;color:#2ecc71}
+[data-theme="dark"] .level-good{background:#1a2540;color:#5dade2}
+[data-theme="dark"] .level-mid{background:#2e2a1a;color:#f1c40f}
+[data-theme="dark"] .level-low{background:#2e1a1a;color:#e74c3c}
+.result-desc{font-size:.92rem;color:var(--text-secondary);line-height:1.7;max-width:560px;margin:1rem auto 0}
+.result-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:1.5rem}
+.meta-item{text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-sm)}
+.meta-item .meta-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:.3rem}
+.meta-item .meta-value{font-size:.95rem;font-weight:600;color:var(--text-primary)}
+.details-toggle{width:100%;padding:.8rem;background:var(--bg-secondary);border:1px solid var(--border);
+  border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:600;
+  color:var(--accent);transition:all var(--transition);margin-bottom:1rem}
+.details-toggle:hover{background:var(--border)}
+.details-list{display:none;max-height:400px;overflow-y:auto}
+.details-list.open{display:block;animation:fadeUp .3s ease}
+.detail-item{display:flex;gap:.8rem;padding:.8rem;border-radius:var(--radius-sm);margin-bottom:.5rem;
+  border:1px solid var(--border);align-items:flex-start;font-size:.88rem}
+.detail-item.correct-answer{background:var(--correct-bg);border-color:var(--correct)}
+.detail-item.wrong-answer{background:var(--wrong-bg);border-color:var(--wrong)}
+.detail-num{min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.78rem;color:#fff;flex-shrink:0}
+.correct-answer .detail-num{background:var(--correct)}
+.wrong-answer .detail-num{background:var(--wrong)}
+.detail-content{flex:1;line-height:1.5}
+.detail-q{font-weight:600;color:var(--text-primary);margin-bottom:.3rem}
+.detail-a{color:var(--text-secondary);font-size:.85rem}
+.detail-a strong{font-weight:600}
+.modal-actions{display:flex;gap:.8rem;padding:0 2rem 2rem;flex-wrap:wrap}
+.modal-actions .btn{flex:1;min-width:180px}
+/* === FOOTER === */
+.footer{background:var(--bg-card);border-top:1px solid var(--border);padding:1.5rem;text-align:center;
+  font-size:.82rem;color:var(--text-muted);transition:all var(--transition)}
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .header{padding:0 1rem}
+  .header-title{font-size:1rem}
+  .header-title span{font-size:.72rem}
+  .main{padding:1.2rem 1rem 2rem}
+  .card{padding:1.4rem}
+  .info-grid{grid-template-columns:1fr}
+  .question-card{padding:1.3rem}
+  .q-text{font-size:.93rem}
+  .result-meta{grid-template-columns:1fr}
+  .modal-body{padding:1.3rem}
+  .modal-actions{padding:0 1.3rem 1.3rem;flex-direction:column}
+  .modal-actions .btn{min-width:auto}
+  .progress-wrap{margin:-1.2rem -1rem 1.2rem;padding:.8rem 1rem}
+  .modal-header{padding:1.5rem}
+  .modal-header h2{font-size:1.3rem}
+  .result-score{font-size:2.8rem}
+}
+@media(max-width:480px){
+  .header-inner{min-height:56px}
+  .header-title{font-size:.9rem}
+  .theme-btn{width:36px;height:36px;font-size:1rem}
+  .option label{padding:.7rem .9rem;font-size:.88rem}
+}
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+/* Print */
+@media print{.header,.footer,.modal-actions,.progress-wrap,.theme-btn{display:none!important}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title">
+      Диагностика
+      <span> теоретической устойчивости к генеративному мусорному контенту</span>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">🌙</button>
+  </div>
+</header>
+
+<main class="main">
+  <!-- SECTION: INTRO -->
+  <div id="introSection" class="section active">
+    <div class="card">
+      <div class="card-title">Генеративный мусорный контент</div>
+    <p>это низкокачественные тексты, изображения и медиаматериалы, массово преднамеренно создаваемые с помощью генеративных моделей ИИ без надлежащей проверки, редактирования и осмысления. Ответственность за каждый этап — от создания до потребления — лежит исключительно на людях.</p>
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>Формат теста</h4>
+          <p>20 вопросов с выбором одного правильного ответа из четырёх предложенных вариантов</p>
+        </div>
+        <div class="info-box">
+          <h4>Время выполнения</h4>
+          <p>Время не ограничено. Среднее время вдумчивого прохождения составляет 5-10 минут</p>
+        </div>
+        <div class="info-box">
+          <h4>Оценивание</h4>
+          <p>Четыре уровня устойчивости: высокий, хороший, средний и начальный</p>
+        </div>
+        <div class="info-box">
+          <h4>Результат</h4>
+          <p>Именной сертификат с детализацией ответов и возможностью экспорта в HTML-файл</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Инструкция</div>
+      <ul>
+        <li>Введите вашу фамилию и имя в поле ниже</li>
+        <li>Нажмите кнопку «Начать тестирование» для перехода к вопросам</li>
+        <li>Внимательно прочитайте каждый вопрос и выберите один вариант ответа</li>
+        <li>Вы можете изменять свои ответы до момента отправки теста</li>
+        <li>После ответа на все вопросы нажмите кнопку «Завершить и получить результат»</li>
+        <li>Ознакомьтесь с результатами в именном сертификате и при необходимости экспортируйте их</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label for="studentName">Фамилия и имя студента</label>
+        <input type="text" id="studentName" class="form-input" placeholder="Например: Орлова Ева" autocomplete="name" maxlength="100">
+      </div>
+      <div id="nameError" class="validation-msg">Пожалуйста, введите вашу фамилию и имя</div>
+      <button class="btn btn-primary btn-full" onclick="startTest()">Начать тестирование</button>
+    </div>
+  </div>
+
+  <!-- SECTION: TEST -->
+  <div id="testSection" class="section">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progressText">Отвечено: 0 из 20</span>
+        <span class="timer" id="timerDisplay">00:00</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div id="questionsContainer"></div>
+    <div id="submitError" class="validation-msg" style="margin-bottom:1rem">Пожалуйста, ответьте на все вопросы теста перед отправкой</div>
+    <button class="btn btn-primary btn-full" onclick="submitTest()" id="submitBtn">Завершить и получить результат</button>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h2>Сертификат</h2>
+      <p id="certName"></p>
+    </div>
+    <div class="modal-body">
+      <div class="result-summary">
+        <div class="result-score" id="certScore"></div>
+        <div class="result-pct" id="certPct"></div>
+        <div class="result-level" id="certLevel"></div>
+        <div class="result-desc" id="certDesc"></div>
+      </div>
+      <div class="result-meta">
+        <div class="meta-item"><div class="meta-label">Дата</div><div class="meta-value" id="certDate"></div></div>
+        <div class="meta-item"><div class="meta-label">Время</div><div class="meta-value" id="certTime"></div></div>
+        <div class="meta-item"><div class="meta-label">Продолжительность</div><div class="meta-value" id="certDuration"></div></div>
+      </div>
+      <button class="details-toggle" id="detailsToggle" onclick="toggleDetails()">Показать детализацию ответов</button>
+      <div class="details-list" id="detailsList"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="exportResults()">Экспортировать в HTML</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+<div class="container">
+<p>© 2026 | kmp | CC BY-NC-SA 4.0<br>
+Разработано для студентов БрГУ имени А.С. Пушкина</p>
+</div>
+</footer>
+<div style="position: fixed; bottom: 10px; color: #777777; right: 30px; opacity: 0.3; font-size: 14px;">kmp+</div>
+
+<script>
+// ============ DATA ============
+const questions = [
+{
+text: "Что такое генеративный мусорный контент?",
+options: [
+"Низкокачественный контент, массово создаваемый с помощью генеративных моделей ИИ без надлежащей проверки и редактирования",
+"Любой контент, созданный с помощью компьютерных технологий",
+"Контент, опубликованный в социальных сетях без модерации",
+"Научные статьи, написанные большим коллективом авторов"
+],
+correct: 0
+},
+{
+text: "Кто несёт полную ответственность за генерацию, распространение и потребление мусорного контента?",
+options: [
+"Исключительно разработчики нейросетей и генеративных моделей",
+"Платформы социальных сетей и поисковые системы",
+"Государственные регуляторы и контролирующие органы",
+"Люди — на всех этапах: создания, распространения и потребления"
+],
+correct: 3
+},
+{
+text: "Какой признак может указывать на текст, сгенерированный ИИ без последующего редактирования?",
+options: [
+"Наличие выраженной авторской позиции и отсылок к личному опыту",
+"Активное использование разговорной лексики и жаргонизмов",
+"Чрезмерная гладкость изложения, обобщённость формулировок и отсутствие конкретных источников",
+"Подчёркнутая краткость и лаконичность изложения"
+],
+correct: 2
+},
+{
+text: "Какой метод проверки достоверности информации является наиболее надёжным?",
+options: [
+"Перекрёстная проверка по нескольким независимым авторитетным источникам",
+"Оценка количества просмотров и репостов публикации",
+"Оценка визуального оформления и дизайна сайта-источника",
+"Анализ длины и объёма текстового материала"
+],
+correct: 0
+},
+{
+text: "Какое действие в наибольшей степени способствует распространению мусорного контента?",
+options: [
+"Критическая проверка источника информации перед репостом",
+"Обсуждение прочитанного материала с коллегами и экспертами",
+"Обращение к первоисточнику для уточнения деталей",
+"Автоматический репост привлекательных заголовков без прочтения и верификации материала"
+],
+correct: 3
+},
+{
+text: "Что такое «информационный пузырь» (filter bubble)?",
+options: [
+"Ситуация, при которой алгоритмы платформ показывают пользователю преимущественно контент, совпадающий с его существующими взглядами и предпочтениями",
+"Специализированный программный фильтр для защиты от спам-рассылок",
+"Инновационная методика обучения иностранным языкам в цифровой среде",
+"Программное обеспечение для автоматической генерации текстового контента"
+],
+correct: 0
+},
+{
+text: "Какой из перечисленных примеров с наибольшей вероятностью является мусорным контентом?",
+options: [
+"Рецензируемая научная статья, опубликованная в журнале с импакт-фактором",
+"Авторская аналитическая колонка эксперта с указанием профессиональной аффилиации",
+"Автоматически сгенерированная статья без указания авторства и источников, содержащая исключительно общие формулировки",
+"Учебное пособие, прошедшее многоэтапную редакционную и научную экспертизу"
+],
+correct: 2
+},
+{
+text: "Что необходимо сделать перед тем, как поделиться информацией в социальных сетях?",
+options: [
+"Убедиться, что публикация имеет привлекательный и броский заголовок",
+"Проверить источник, авторство, дату публикации и достоверность приведённых фактов",
+"Проверить количество лайков и положительных реакций под публикацией",
+"Убедиться, что текст достаточно объёмный и подробный"
+],
+correct: 1
+},
+{
+text: "Какой из перечисленных признаков НЕ характерен для качественного академического текста?",
+options: [
+"Отсутствие указания на автора, его квалификацию и институциональную аффилиацию",
+"Наличие ссылок на рецензируемые и верифицируемые источники",
+"Чётко описанная и воспроизводимая методология исследования",
+"Логически выстроенная структура аргументации с обоснованными выводами"
+],
+correct: 0
+},
+{
+text: "Какую роль играет критическое мышление в противодействии мусорному контенту?",
+options: [
+"Критическое мышление не играет существенной роли в данном контексте",
+"Лишь замедляет процесс получения и обработки информации",
+"Позволяет анализировать, оценивать и фильтровать информацию, отличая достоверные сведения от недостоверных",
+"Помогает создавать более убедительный мусорный контент"
+],
+correct: 2
+},
+{
+text: "Что такое дипфейк (deepfake)?",
+options: [
+"Реалистичный медиаконтент — видео, аудио или изображение, — созданный или модифицированный с помощью ИИ с целью введения в заблуждение",
+"Особый литературный жанр научно-фантастической прозы",
+"Метод глубокого машинного обучения, применяемый исключительно для перевода текстов",
+"Стандартный формат хранения и сжатия мультимедийных файлов"
+],
+correct: 0
+},
+{
+text: "Какой подход к потреблению онлайн-контента является наиболее ответственным?",
+options: [
+"Безоговорочно доверять контенту, поступающему из привычных и знакомых источников",
+"Осознанно оценивать источники, верифицировать факты и критически осмыслять информацию перед её принятием",
+"Полностью отказаться от потребления любого цифрового контента",
+"Всецело полагаться на рекомендательные алгоритмы платформ при выборе контента"
+],
+correct: 1
+},
+{
+text: "Почему мусорный контент представляет особую угрозу для образовательной среды?",
+options: [
+"Он занимает значительный объём дискового пространства на серверах учебных заведений",
+"Он всегда создаётся исключительно на иностранных языках и поэтому труднодоступен",
+"Он требует слишком дорогостоящих технологий для своего производства",
+"Он подменяет достоверное знание, снижает качество обучения и формирует ложные представления у обучающихся"
+],
+correct: 3
+},
+{
+text: "Какой фактор делает человека наиболее уязвимым к воздействию мусорного контента?",
+options: [
+"Высокий уровень цифровой и информационной грамотности",
+"Ограниченный доступ к сети Интернет и цифровым ресурсам",
+"Некритичное восприятие информации и отсутствие устойчивых навыков её верификации",
+"Владение несколькими иностранными языками на высоком уровне"
+],
+correct: 2
+},
+{
+text: "Что подразумевается под понятием «цифровая гигиена» в контексте информационной грамотности?",
+options: [
+"Совокупность практик осознанного и безопасного поведения в цифровой среде, включая критическую оценку потребляемого контента",
+"Систематическая физическая очистка компьютерной периферии — клавиатуры и экрана монитора",
+"Исключительно установка и регулярное обновление антивирусного программного обеспечения",
+"Ежедневное обновление операционной системы и прикладного программного обеспечения"
+],
+correct: 0
+},
+{
+text: "Каким образом генеративные модели ИИ создают мусорный контент?",
+options: [
+"Исключительно путём дословного копирования и плагиата существующих текстов",
+"Генерируя правдоподобно звучащий, но потенциально неточный, непроверенный или бессодержательный текст в значительных объёмах",
+"Только посредством автоматического перевода текстов с одного языка на другой",
+"Исключительно при создании графических изображений и визуального контента"
+],
+correct: 1
+},
+{
+text: "Какое из следующих утверждений о генеративном ИИ является верным?",
+options: [
+"Генеративный ИИ всегда и гарантированно создаёт достоверный и точный контент",
+"ИИ обладает способностью самостоятельно и безошибочно отличать истину от заблуждения",
+"Современный ИИ принципиально не способен генерировать связные тексты на иностранных языках",
+"ИИ представляет собой инструмент, качество результата которого определяется тем, как человек его применяет, проверяет и корректирует"
+],
+correct: 3
+},
+{
+text: "Что является примером ответственного использования генеративного ИИ в академической среде?",
+options: [
+"Представление сгенерированного текста в качестве собственной оригинальной работы без каких-либо пометок",
+"Автоматическая генерация итоговых квалификационных работ без экспертной проверки содержания",
+"Использование ИИ как вспомогательного инструмента с обязательной последующей верификацией, редактированием и указанием факта применения ИИ",
+"Немодерируемая автоматическая публикация сгенерированных текстов на образовательных платформах"
+],
+correct: 2
+},
+{
+text: "Какой лингвистический маркер может указывать на автоматически сгенерированный текст?",
+options: [
+"Однообразие синтаксических конструкций, высокая степень клишированности и отсутствие коммуникативной адресности",
+"Ярко выраженный индивидуальный авторский стиль с характерными стилистическими особенностями",
+"Активное и уместное использование территориальных диалектизмов и регионализмов",
+"Частое и функционально мотивированное использование междометий и эмоционально-экспрессивной лексики"
+],
+correct: 0
+},
+{
+text: "Какова роль преподавателя иностранных языков в противодействии мусорному контенту?",
+options: [
+"Данный вопрос находится за пределами профессиональной компетенции преподавателя иностранных языков",
+"Формирование у студентов критической информационной грамотности, навыков лингвистического анализа текстов и ответственного отношения к контенту",
+"Введение полного запрета на использование интернет-ресурсов в рамках аудиторных занятий",
+"Переход исключительно на работу с печатными учебниками и отказ от электронных ресурсов"
+],
+correct: 1
+}
+];
+
+// ============ STATE ============
+const state = {
+  name: '',
+  startTime: null,
+  endTime: null,
+  answers: {},
+  timerInterval: null,
+  theme: localStorage.getItem('theme') || 'light'
+};
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(state.theme);
+  document.getElementById('studentName').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startTest();
+  });
+});
+
+// ============ THEME ============
+function toggleTheme() {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  applyTheme(state.theme);
+  localStorage.setItem('theme', state.theme);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelector('.theme-btn').textContent = theme === 'light' ? '🌙' : '☀️';
+}
+
+// ============ NAVIGATION ============
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============ START TEST ============
+function startTest() {
+  const nameInput = document.getElementById('studentName');
+  const name = nameInput.value.trim();
+  if (!name || name.length < 2) {
+    document.getElementById('nameError').classList.add('visible');
+    nameInput.focus();
+    return;
+  }
+  document.getElementById('nameError').classList.remove('visible');
+  state.name = name;
+  state.startTime = new Date();
+  state.answers = {};
+
+  renderQuestions();
+  showSection('testSection');
+  startTimer();
+}
+
+// ============ TIMER ============
+function startTimer() {
+  clearInterval(state.timerInterval);
+  const display = document.getElementById('timerDisplay');
+  state.timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - state.startTime.getTime()) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    display.textContent = m + ':' + s;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+}
+
+function formatDuration(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  if (min === 0) return sec + ' сек.';
+  return min + ' мин. ' + sec + ' сек.';
+}
+
+// ============ RENDER QUESTIONS ============
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'qcard-' + i;
+    let optionsHTML = '';
+    const letters = ['А', 'Б', 'В', 'Г'];
+    q.options.forEach((opt, j) => {
+      optionsHTML += `
+        <div class="option">
+          <input type="radio" name="q${i}" id="q${i}_${j}" value="${j}" onchange="onAnswer(${i})">
+          <label for="q${i}_${j}">
+            <span class="option-marker">${letters[j]}</span>
+            <span>${opt}</span>
+          </label>
+        </div>`;
+    });
+    card.innerHTML = `
+      <div class="question-header">
+        <div class="q-number">${i + 1}</div>
+        <div class="q-text">${q.text}</div>
+      </div>
+      <div class="options">${optionsHTML}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function onAnswer(index) {
+  const selected = document.querySelector(`input[name="q${index}"]:checked`);
+  if (selected) {
+    state.answers[index] = parseInt(selected.value);
+    document.getElementById('qcard-' + index).classList.add('answered');
+  }
+  updateProgress();
+  document.getElementById('submitError').classList.remove('visible');
+}
+
+function updateProgress() {
+  const answered = Object.keys(state.answers).length;
+  const total = questions.length;
+  document.getElementById('progressText').textContent = `Отвечено: ${answered} из ${total}`;
+  document.getElementById('progressFill').style.width = (answered / total * 100) + '%';
+}
+
+// ============ SUBMIT ============
+function submitTest() {
+  const answered = Object.keys(state.answers).length;
+  if (answered < questions.length) {
+    document.getElementById('submitError').classList.add('visible');
+    // Scroll to first unanswered
+    for (let i = 0; i < questions.length; i++) {
+      if (state.answers[i] === undefined) {
+        document.getElementById('qcard-' + i).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+    }
+    return;
+  }
+  state.endTime = new Date();
+  stopTimer();
+  showCertificate();
+}
+
+// ============ RESULTS ============
+function getResults() {
+  let correct = 0;
+  const details = [];
+  questions.forEach((q, i) => {
+    const userAnswer = state.answers[i];
+    const isCorrect = userAnswer === q.correct;
+    if (isCorrect) correct++;
+    details.push({
+      num: i + 1,
+      text: q.text,
+      userAnswer: q.options[userAnswer],
+      correctAnswer: q.options[q.correct],
+      isCorrect
+    });
+  });
+  const pct = Math.round(correct / questions.length * 100);
+  let level, levelClass, desc;
+  if (pct >= 90) {
+    level = 'Высокий уровень устойчивости';
+    levelClass = 'level-high';
+    desc = 'Вы демонстрируете высокий уровень теоретической устойчивости к мусорному контенту. Ваши навыки критического анализа и информационной грамотности позволяют эффективно распознавать недостоверную информацию, чтобы противодействовать её распространению. Вся надежда на вас!';
+  } else if (pct >= 75) {
+    level = 'Хороший уровень устойчивости';
+    levelClass = 'level-good';
+    desc = 'Вы обладаете хорошим уровнем теретической устойчивости к мусорному контенту. Основные принципы критической оценки информации вам знакомы. Рекомендуется развивать и совершенствовать практические навыки анализа и верификации контента для достижения экспертного уровня.';
+  } else if (pct >= 55) {
+    level = 'Средний уровень устойчивости';
+    levelClass = 'level-mid';
+    desc = 'Ваш уровень теоретической устойчивости к мусорному контенту оценивается как посредственный. Вы владеете базовыми представлениями о проблеме, однако ряд аспектов требует дополнительного изучения. Рекомендуется углублённая работа над развитием навыков критического мышления и цифровой гигиены.';
+  } else {
+    level = 'Начальный уровень устойчивости';
+    levelClass = 'level-low';
+    desc = 'Ваш уровень даже теоретической устойчивости к мусорному контенту требует значительного развития. Настоятельно рекомендуется системное изучение принципов информационной грамотности, критического анализа текстов и ответственного обращения с цифровым контентом.';
+  }
+  const duration = state.endTime.getTime() - state.startTime.getTime();
+  return { correct, total: questions.length, pct, level, levelClass, desc, details, duration };
+}
+
+function showCertificate() {
+  const r = getResults();
+  document.getElementById('certName').textContent = state.name;
+  document.getElementById('certScore').innerHTML = r.correct + ' <span>/ ' + r.total + '</span>';
+  document.getElementById('certPct').textContent = 'Правильных ответов: ' + r.pct + '%';
+  const levelEl = document.getElementById('certLevel');
+  levelEl.textContent = r.level;
+  levelEl.className = 'result-level ' + r.levelClass;
+  document.getElementById('certDesc').textContent = r.desc;
+  document.getElementById('certDate').textContent = state.endTime.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  document.getElementById('certTime').textContent = state.endTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('certDuration').textContent = formatDuration(r.duration);
+
+  // Details
+  const detailsList = document.getElementById('detailsList');
+  detailsList.innerHTML = '';
+  detailsList.classList.remove('open');
+  document.getElementById('detailsToggle').textContent = 'Показать детализацию ответов';
+  r.details.forEach(d => {
+    const item = document.createElement('div');
+    item.className = 'detail-item ' + (d.isCorrect ? 'correct-answer' : 'wrong-answer');
+    let content = `<div class="detail-num">${d.num}</div><div class="detail-content"><div class="detail-q">${d.text}</div>`;
+    if (d.isCorrect) {
+      content += `<div class="detail-a">Ваш ответ: <strong>${d.userAnswer}</strong></div>`;
+    } else {
+      content += `<div class="detail-a">Ваш ответ: <strong>${d.userAnswer}</strong></div>`;
+      content += `<div class="detail-a">Правильный ответ: <strong>${d.correctAnswer}</strong></div>`;
+    }
+    content += '</div>';
+    item.innerHTML = content;
+    detailsList.appendChild(item);
+  });
+
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function toggleDetails() {
+  const list = document.getElementById('detailsList');
+  const btn = document.getElementById('detailsToggle');
+  const isOpen = list.classList.toggle('open');
+  btn.textContent = isOpen ? 'Скрыть детализацию ответов' : 'Показать детализацию ответов';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ============ EXPORT ============
+function exportResults() {
+  const r = getResults();
+  const date = state.endTime.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const time = state.endTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const dur = formatDuration(r.duration);
+  let detailsRows = '';
+  r.details.forEach(d => {
+    const status = d.isCorrect ? 'correct' : 'wrong';
+    const icon = d.isCorrect ? 'Верно' : 'Неверно';
+    detailsRows += `<tr class="${status}">
+      <td style="text-align:center;font-weight:700;width:40px">${d.num}</td>
+      <td>${d.text}</td>
+      <td>${d.userAnswer}</td>
+      <td>${d.isCorrect ? '—' : d.correctAnswer}</td>
+      <td style="text-align:center;font-weight:700">${icon}</td>
+    </tr>`;
+  });
+
+  let levelColor;
+  if (r.pct >= 90) levelColor = '#27ae60';
+  else if (r.pct >= 75) levelColor = '#2980b9';
+  else if (r.pct >= 55) levelColor = '#f39c12';
+  else levelColor = '#c0392b';
+
+  const html = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сертификат — ${state.name}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;color:#333;line-height:1.6;padding:2rem}
+.certificate{max-width:800px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden}
+.cert-header{background:#325980;color:#fff;padding:2.5rem 2rem;text-align:center}
+.cert-header h1{font-size:1.8rem;margin-bottom:.3rem;letter-spacing:.04em}
+.cert-header p{font-size:1rem;opacity:.85}
+.cert-name{font-size:1.3rem;margin-top:.8rem;font-weight:400;border-top:1px solid rgba(255,255,255,.25);padding-top:.8rem}
+.cert-body{padding:2rem}
+.score-block{text-align:center;padding:1.5rem 0;border-bottom:2px solid #f1f1f1;margin-bottom:1.5rem}
+.score-num{font-size:3rem;font-weight:800;color:#325980}
+.score-num span{font-size:1.1rem;font-weight:400;color:#888}
+.score-pct{margin:.3rem 0;color:#555}
+.score-level{display:inline-block;padding:.5rem 1.5rem;border-radius:2rem;font-weight:700;color:#fff;background:${levelColor};margin:.5rem 0}
+.score-desc{max-width:600px;margin:.8rem auto 0;font-size:.92rem;color:#555;text-align:center}
+.meta{display:flex;justify-content:center;gap:2rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.meta-item{text-align:center}
+.meta-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:#888}
+.meta-val{font-weight:600;font-size:.95rem}
+h2{font-size:1.15rem;color:#325980;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #3498db;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.5rem}
+th{background:#325980;color:#fff;padding:.7rem .5rem;text-align:left;font-weight:600}
+td{padding:.65rem .5rem;border-bottom:1px solid #f1f1f1;vertical-align:top}
+tr.correct td{background:#eafaf1}
+tr.wrong td{background:#fdedec}
+.footer{text-align:center;padding:1.5rem;font-size:.8rem;color:#888;border-top:1px solid #f1f1f1}
+@media(max-width:600px){body{padding:.5rem}.cert-body{padding:1rem}.meta{flex-direction:column;gap:.5rem}table{font-size:.8rem}}
+@media print{body{padding:0;background:#fff}.certificate{box-shadow:none;border-radius:0}}
+</style>
+</head>
+<body>
+<div class="certificate">
+  <div class="cert-header">
+    <h1>Сертификат</h1>
+    <p>Диагностический тест: устойчивость к генеративному мусорному контенту</p>
+    <div class="cert-name">${state.name}</div>
+  </div>
+  <div class="cert-body">
+    <div class="score-block">
+      <div class="score-num">${r.correct} <span>/ ${r.total}</span></div>
+      <div class="score-pct">Правильных ответов: ${r.pct}%</div>
+      <div class="score-level">${r.level}</div>
+      <div class="score-desc">${r.desc}</div>
+    </div>
+    <div class="meta">
+      <div class="meta-item"><div class="meta-label">Дата</div><div class="meta-val">${date}</div></div>
+      <div class="meta-item"><div class="meta-label">Время</div><div class="meta-val">${time}</div></div>
+      <div class="meta-item"><div class="meta-label">Продолжительность</div><div class="meta-val">${dur}</div></div>
+    </div>
+    <h2>Детализация ответов</h2>
+    <table>
+      <thead><tr><th>N</th><th>Вопрос</th><th>Ваш ответ</th><th>Правильный ответ</th><th>Результат</th></tr></thead>
+      <tbody>${detailsRows}</tbody>
+    </table>
+  </div>
+  <div class="footer">© 2026 | kmp | CC BY-NC-SA 4.0</div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const safeName = state.name.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s_-]/g, '').replace(/\s+/g, '_');
+  a.download = 'Сертификат_' + safeName + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
+```
